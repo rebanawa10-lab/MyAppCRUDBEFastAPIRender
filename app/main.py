@@ -1,9 +1,22 @@
 # file:    main.py 
 
-from fastapi import FastAPI
+#Local PC MS SQL Server. Ok
+#from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .database import engine
+
+#Supabase config
+from fastapi import FastAPI, Depends
+from sqlalchemy.orm import Session
+#from sqlalchemy import text
+
+
+#Local PC MS SQL Server. Ok
+#from .database import engine
+
+#Supabase config
+from .database import engine, get_db
+
 from . import models
 # OLD:
 #from app.api.routes.user import router as user_router
@@ -43,3 +56,9 @@ app.include_router(inventory.router)
 @app.get("/")
 def root():
     return {"message": "FastAPI is running"}
+
+#Supabase config
+@app.get("/testdb")
+def test_db(db: Session = Depends(get_db)):
+    result = db.execute("SELECT 1").scalar()
+    return {"status": "connected" if result == 1 else "failed"}
